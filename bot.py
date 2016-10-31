@@ -4,7 +4,7 @@
 from telegram.ext import Updater, CommandHandler 
 
 def start(bot, update):
-    bot.sendMessage(chat_id=update.message.chat_id, text="Hi!")
+    update.message.reply_text('Hi!')
 
 def main():
     # Create the EventHandler and pass it your bot's token.
