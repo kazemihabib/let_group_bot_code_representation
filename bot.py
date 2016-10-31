@@ -12,7 +12,19 @@ def start(bot, update):
 def error(bot, update, error):
     print('error',error)
 
-#***********************************************
+#****************************************
+def sendLyric(bot,update):
+    choice = int(update.message.text)
+    try:
+        link = links[choice] 
+
+        lyric = api.lyric(link)
+        update.message.reply_text(str(lyric))
+    except Exception as error:
+        print('error: ',error)
+        update.message.reply_text("Oops! i\'m sorry!\n Something went wrong.")
+#****************************************
+            
 def findLyrics(bot,update):
     links = api.search(update.message.text)
 
@@ -25,7 +37,6 @@ def findLyrics(bot,update):
     update.message.reply_text(lyrics)
 
     print('links',links)
-#***********************************************
 
 def main():
     # Create the EventHandler and pass it your bot's token.
