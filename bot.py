@@ -6,6 +6,9 @@ from telegram.ext import Updater, CommandHandler
 def start(bot, update):
     update.message.reply_text('Hi!')
 
+def error(bot, update, error):
+    print(error)
+
 def main():
     # Create the EventHandler and pass it your bot's token.
     updater = Updater("266267518:AAFW2y2drcXVaJr0NgIlA6nYwgzSWohvepo")
@@ -15,6 +18,9 @@ def main():
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
+
+    # log all errors
+    dp.add_error_handler(error)
 
     # Start the Bot
     updater.start_polling()
