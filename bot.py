@@ -3,11 +3,24 @@
 
 from telegram.ext import Updater, CommandHandler 
 
+def start(bot, update):
+    bot.sendMessage(chat_id=update.message.chat_id, text="Hi!")
 
 def main():
     # Create the EventHandler and pass it your bot's token.
     updater = Updater("266267518:AAFW2y2drcXVaJr0NgIlA6nYwgzSWohvepo")
 
+    # Get the dispatcher to register handlers
+    dp = updater.dispatcher
+
+    # on different commands - answer in Telegram
+    dp.add_handler(CommandHandler("start", start))
+
+    # Start the Bot
+    updater.start_polling()
+
+    # Run the bot until the you presses Ctrl-C or the process receives SIGINT,
+    updater.idle()
 
 
 if __name__ == '__main__':
