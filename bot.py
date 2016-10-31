@@ -2,17 +2,30 @@
 # -*- coding: utf-8 -*-
 
 from telegram.ext import Updater, CommandHandler,Filters ,MessageHandler
+#***********************************************
+import api
+#***********************************************
 
 def start(bot, update):
     update.message.reply_text('Hi!')
 
 def error(bot, update, error):
-    print(error)
+    print('error',error)
 
-################################################
-def echo(bot, update):
-    update.message.reply_text(update.message.text)
-################################################
+#***********************************************
+def findLyrics(bot,update):
+    links = api.search(update.message.text)
+
+    lyrics=[]
+    for index,link in enumerate(links):
+        lyric = link.replace('http://www.metrolyrics.com/','').replace('.html','').replace('-lyrics-',' ').replace('-', ' ')
+        lyrics.append(str(index)+' - ' + lyric)
+      
+    lyrics = '\n'.join(lyrics)
+    update.message.reply_text(lyrics)
+
+    print('links',links)
+#***********************************************
 
 def main():
     # Create the EventHandler and pass it your bot's token.
@@ -24,9 +37,9 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
 
-    ################################################
-    dp.add_handler(MessageHandler(Filters.text,echo))
-    ################################################
+#***********************************************
+    dp.add_handler(MessageHandler(Filters.text,findLyrics))
+#***********************************************
 
     # log all errors
     dp.add_error_handler(error)
