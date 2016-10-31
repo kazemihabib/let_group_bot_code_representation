@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from telegram.ext import Updater, CommandHandler,Filters ,MessageHandler
+from telegram.ext import Updater, CommandHandler,Filters ,MessageHandler,CallbackQueryHandler 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import api
 
@@ -21,10 +21,17 @@ def  checkMessageType(bot,update):
         findLyrics(bot,update)
 
 def sendLyric(bot,update):
+    print('sendLyric')
     global id_storage    
-    chatId = update.message.chat_id
+    #****************************
+    query = update.callback_query
+    # chatId = update.message.chat_id
+    chatId = query.message.chat_id
+    # choice = int(update.message.text)
+    choice = int(query.data) 
 
-    choice = int(update.message.text)
+    #****************************
+    print('choice', choice)
 
     if chatId in id_storage:
         try:
@@ -32,14 +39,14 @@ def sendLyric(bot,update):
             link = links[choice] 
 
             lyric = api.lyric(link)
-            update.message.reply_text(str(lyric))
+            bot.sendMessage(chat_id=chatId, text= str(lyric))
         except IndexError as indexerror:
             print('IndexError: ',indexerror)
-            update.message.reply_text("Oops!\n No previous song with this number is found.")
+            bot.sendMessage(chat_id=chatId,text = "Oops!\n No previous song with this number is found.")
 
         except Exception as error:
             print('error: ',error)
-            update.message.reply_text("Oops! i\'m sorry!\n Something went wrong.")
+            bot.sendMessage(chat_id=chatId,text = "Oops! i\'m sorry!\n Something went wrong.")
             
 def findLyrics(bot,update):
     global id_storage
@@ -51,21 +58,16 @@ def findLyrics(bot,update):
         lyric = link.replace('http://www.metrolyrics.com/','').replace('.html','').replace('-lyrics-',' ').replace('-', ' ')
         lyrics.append(str(index)+' - ' + lyric)
       
-    # update.message.reply_text(lyrics)
-    #****************************************************
     sendInlineKeyBoard(bot,update,lyrics) 
-    #****************************************************
 
-#********************************************************
 def sendInlineKeyBoard(bot,update,lyrics):
     chatId = update.message.chat_id
     keyboard = [[InlineKeyboardButton(text, callback_data=str(index))] for index,text in enumerate(lyrics)] 
 
     reply_markup = InlineKeyboardMarkup(keyboard)
-    
+
     bot.sendMessage(chat_id=chatId,text='please choose:',reply_markup=reply_markup)
 
-#********************************************************
 def main():
     # Create the EventHandler and pass it your bot's token.
     updater = Updater("266267518:AAFW2y2drcXVaJr0NgIlA6nYwgzSWohvepo")
@@ -77,7 +79,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
 
     dp.add_handler(MessageHandler(Filters.text,findLyrics))
-    # dp.add_handler(CallbackQueryHandler(sendLyric))
+    dp.add_handler(CallbackQueryHandler(sendLyric))
 
     # log all errors
     dp.add_error_handler(error)
