@@ -13,6 +13,14 @@ def error(bot, update, error):
     print('error',error)
 
 #****************************************
+def  checkMessageType(bot,update):
+    txt = update.message.text
+    if(txt.isnumeric()): 
+        sendLyric(bot,update)
+    else :
+        findLyrics(bot,update)
+#****************************************
+
 def sendLyric(bot,update):
     choice = int(update.message.text)
     try:
@@ -23,7 +31,6 @@ def sendLyric(bot,update):
     except Exception as error:
         print('error: ',error)
         update.message.reply_text("Oops! i\'m sorry!\n Something went wrong.")
-#****************************************
             
 def findLyrics(bot,update):
     links = api.search(update.message.text)
@@ -49,7 +56,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
 
 #***********************************************
-    dp.add_handler(MessageHandler(Filters.text,findLyrics))
+    dp.add_handler(MessageHandler(Filters.text,checkMessageType))
 #***********************************************
 
     # log all errors
